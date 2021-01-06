@@ -12,17 +12,16 @@ import * as Auth from './auth.actions';
 
 @Injectable()
 export class AuthService {
-
   constructor(
     private router: Router,
     private afAuth: AngularFireAuth,
     private trainingService: TrainingService,
     private uiService: UIService,
-    private store: Store<{ui: fromRoot.State}>
+    private store: Store<{ ui: fromRoot.State }>
   ) {}
 
   initAuthListener() {
-    this.afAuth.authState.subscribe(user => {
+    this.afAuth.authState.subscribe((user) => {
       if (user) {
         this.store.dispatch(new Auth.SetAuthenticated());
         this.router.navigate(['/training']);
@@ -35,17 +34,14 @@ export class AuthService {
   }
 
   registerUser(authData: AuthData) {
-    // this.uiService.loadingStateChanged.next(true);
     this.store.dispatch(new UI.StartLoading());
     this.afAuth
       .createUserWithEmailAndPassword(authData.email, authData.password)
       .then((result) => {
-        // this.uiService.loadingStateChanged.next(false);
         this.store.dispatch(new UI.StopLoading());
         console.log(result);
       })
       .catch((error) => {
-        // this.uiService.loadingStateChanged.next(false);
         this.store.dispatch(new UI.StopLoading());
         this.uiService.showSnackbar(error.message, null, 3000);
       });
@@ -53,16 +49,13 @@ export class AuthService {
 
   login(authData: AuthData) {
     this.store.dispatch(new UI.StartLoading());
-    // this.uiService.loadingStateChanged.next(true);
     this.afAuth
       .signInWithEmailAndPassword(authData.email, authData.password)
       .then((result) => {
         this.store.dispatch(new UI.StopLoading());
-        // this.uiService.loadingStateChanged.next(false);
         console.log(result);
       })
       .catch((error) => {
-        // this.uiService.loadingStateChanged.next(false);
         this.store.dispatch(new UI.StopLoading());
         this.uiService.showSnackbar(error.message, null, 3000);
       });
@@ -71,5 +64,4 @@ export class AuthService {
   logout() {
     this.afAuth.signOut();
   }
-
 }
